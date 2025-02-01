@@ -15,7 +15,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public TokenDto login(@RequestBody LoginRequestDto loginRequestDto) {
-        TokenDto loginSuccess = userService.loginUser(loginRequestDto.getEmail(),loginRequestDto.getPassword());
+        TokenDto loginSuccess = userService.loginUser(loginRequestDto);
         return loginSuccess;
     }
 }

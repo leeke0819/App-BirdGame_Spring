@@ -19,13 +19,9 @@ import java.util.List;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // Long으로 하는 이유 : 데이터가 많아질수록 숫자범위가 부족해질 수 있어서
-    private Long id;
+    private String email;
 
     private String password;
-
-    private String email;
 
     private String nickname;
 

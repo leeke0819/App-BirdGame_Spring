@@ -22,7 +22,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String UID) throws UsernameNotFoundException {
-        Optional<UserEntity> userOptional = userRepository.findById(Long.valueOf(UID));
+        System.out.println(UID);
+        Optional<UserEntity> userOptional = Optional.ofNullable(userRepository.findByEmail(UID));
         if (userOptional.isPresent()) {
             UserEntity user = userOptional.get();
             return createUserDetails(user);
@@ -34,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserDetails createUserDetails(UserEntity userEntity) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(userEntity.getAuthority().toString());
         return new User(
-                String.valueOf(userEntity.getId()),
+                String.valueOf(userEntity.getEmail()),
                 userEntity.getPassword(),
                 Collections.singleton(grantedAuthority)
         );
