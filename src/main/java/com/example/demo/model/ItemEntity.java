@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,10 +17,19 @@ import lombok.Setter;
 public class ItemEntity {
 
     @Id
-    protected String itemCode;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
-    protected String itemName;
+    private String itemCode;
 
-    protected String itemDescription;
+    private String itemName;
+
+    private String itemDescription;
+
+    private int price;
+
+    private short type;
+
+    private String imageRoot;
 
 }

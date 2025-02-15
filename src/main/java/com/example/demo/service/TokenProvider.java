@@ -73,6 +73,7 @@ public class TokenProvider {
     }
 
     public boolean validateToken(String token) {
+        System.out.println("전달된 JWT 토큰: " + token);
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
