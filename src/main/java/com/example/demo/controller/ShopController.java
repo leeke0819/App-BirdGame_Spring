@@ -3,30 +3,23 @@ package com.example.demo.controller;
 import com.example.demo.Dto.MyPageResponseDto;
 import com.example.demo.model.ItemEntity;
 import com.example.demo.service.ShopService;
-<<<<<<< HEAD
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-=======
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
->>>>>>> 5ea4cad941c2c8c82ee28c837ea87c8e820b5720
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/shop")
 public class ShopController {
-<<<<<<< HEAD
-
-=======
->>>>>>> 5ea4cad941c2c8c82ee28c837ea87c8e820b5720
     @Autowired
     private ShopService shopService;
 
@@ -34,7 +27,6 @@ public class ShopController {
     public List<ItemEntity> shop() {
         return shopService.getItems();
     }
-<<<<<<< HEAD
 
     @GetMapping("/page")
     public Page<ItemEntity> shopPage(@RequestParam String pageNo) {
@@ -48,6 +40,4 @@ public class ShopController {
         return null;
     }
 
-=======
->>>>>>> 5ea4cad941c2c8c82ee28c837ea87c8e820b5720
 }
