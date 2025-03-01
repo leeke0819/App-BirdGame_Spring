@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShopService {
@@ -17,6 +18,10 @@ public class ShopService {
     public List<ItemEntity> getItems() {
         List<ItemEntity> itemEntities = itemRepository.findAll();
         return itemEntities;
+    }
+
+    public Optional<ItemEntity> getItemName(String itemName) {
+        return itemRepository.findByItemName(itemName);
     }
 
     public Page<ItemEntity> getPageItems(int page, int size) {
