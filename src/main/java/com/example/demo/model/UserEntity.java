@@ -25,7 +25,7 @@ public class UserEntity {
 
     private String nickname;
 
-    private int money;
+    private Integer money;
 
     private String Authority;
 
