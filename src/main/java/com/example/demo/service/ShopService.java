@@ -39,7 +39,7 @@ public class ShopService {
         return itemRepository.findByItemName(itemName);
     }
 
-    public Page<ItemEntity> getPageItems(int page, int size) {
+    public Page<ItemEntity> getShopPageItems(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return itemRepository.findAll(pageable);
     }

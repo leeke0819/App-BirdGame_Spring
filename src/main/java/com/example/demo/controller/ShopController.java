@@ -39,7 +39,7 @@ public class ShopController {
     public Page<ItemEntity> shopPage(@RequestParam String pageNo) {
         try {
             int pageNumber = Integer.parseInt(pageNo);
-            return shopService.getPageItems(pageNumber, 10);
+            return shopService.getShopPageItems(pageNumber, 10);
         }
         catch(NumberFormatException e){
             System.out.println("사용자가 잘못된 포맷으로 접근했습니다.");
@@ -52,10 +52,10 @@ public class ShopController {
         return shopService.getItemName(itemName);
     }
 
-    @GetMapping("/money")
-    public List<UserEntity> getMoney(@RequestParam int money) {
-        return shopService.getMoney(money);
-    }
+        @GetMapping("/money")
+        public List<UserEntity> getMoney(@RequestParam int money) {
+            return shopService.getMoney(money);
+        }
 
     @PostMapping("/buy")
     public ResponseEntity<String> buyItem(@RequestParam String itemCode){
