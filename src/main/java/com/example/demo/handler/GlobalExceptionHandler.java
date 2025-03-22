@@ -24,4 +24,10 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> handleEntityExistException(EntityExistsException e) {
         return ResponseEntity.status(400).body("이미 존재하는 이메일 주소입니다.");
     }
+
+    @ExceptionHandler
+    public ResponseEntity<String> IllegalArgumentException(IllegalArgumentException e){
+        return ResponseEntity.status(400).body("비밀번호는 8자 이상, 12자 이하로 설정하고 대문자, 소문자, 특수문자를 하나이상 포함해야합니다.");
+    }
+
 }

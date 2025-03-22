@@ -1,6 +1,5 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +26,8 @@ public class UserEntity {
 
     private String Authority;
 
-    //private List<BirdEntity> birdEntities;
+    @OneToMany(mappedBy = "user")
+    private List<BagEntity> bagEntities;
 
 
 

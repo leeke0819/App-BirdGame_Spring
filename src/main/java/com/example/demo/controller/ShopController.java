@@ -59,7 +59,8 @@ public class ShopController {
 
     @PostMapping("/buy")
     public ResponseEntity<String> buyItem(@RequestParam String itemCode){
-        if(shopService.buyItem(itemCode)){
+        if(shopService.buyItem(itemCode, 1)){
+            //가방에 아이템 넣기.
             return ResponseEntity.ok("구매 성공");
         }
         else{

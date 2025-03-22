@@ -20,11 +20,6 @@ public class BagController {
         this.bagService = bagService;
     }
 
-    @GetMapping
-    public List<ItemEntity> bag() {
-        return bagService.getItems();
-    }
-
     @GetMapping("/page")
     public Page<ItemEntity> bagPage(@RequestParam String pageNo) {
         try {
@@ -36,7 +31,5 @@ public class BagController {
         return null;
     }
 
-    @GetMapping("/item")
-    public Optional<ItemEntity> getItemName(@PathVariable String itemName) {return bagService.getItemName(itemName);}
 
 }

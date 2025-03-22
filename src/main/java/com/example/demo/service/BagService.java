@@ -23,14 +23,6 @@ public class BagService {
         this.userRepository = userRepository;
     }
 
-    public List<ItemEntity> getItems() {
-        List<ItemEntity> itemEntities = itemRepository.findAll();
-        return itemEntities;
-    }
-
-    public Optional<ItemEntity> getItemName(String itemName) {
-        return itemRepository.findByItemName(itemName);
-    }
 
     public Page<ItemEntity> getBagPageItems(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
