@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,12 @@ public class BirdEntity {
     private int health;
     private int thirst;
     private int hungry;
-    //private int favorability;
     private int level;
+
+    @ManyToOne
+    private UserEntity user;
+
+    @ManyToOne
+    private BirdTypeEntity birdTypeEntity;
+
 }

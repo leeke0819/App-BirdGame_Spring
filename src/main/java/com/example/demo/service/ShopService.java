@@ -61,9 +61,9 @@ public class ShopService {
 
             // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
             Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
-            if(bagEntity.isPresent()){
+            if(bagEntity.isPresent()){ // 가방 안에 아이템이 있으면?
                 BagEntity bag = bagEntity.get();
-                bag.setAmount(bag.getAmount()+amount);
+                bag.setAmount(bag.getAmount() + amount);
                 bagRepository.save(bag);
             }else{
                 BagEntity bag = new BagEntity();
@@ -81,14 +81,43 @@ public class ShopService {
         }
     }
 
-    public boolean sellItem(String itemCode) {
+    public boolean sellItem(String itemCode, int amount) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         ItemEntity itemEntity = itemRepository.findByItemCode(itemCode).orElseThrow();
         UserEntity userEntity = userRepository.findByEmail(email);
-        int itemPrice = itemEntity.getPrice();
-        int userMoney = userEntity.getMoney();
+        int itemPrice = itemEntity.getPrice(); //아이템의 현재 가격 가져오기
+        int userMoney = userEntity.getMoney(); // 유저 잔고 조회
 
-        userEntity.setMoney(userMoney+itemPrice);
+        // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
+        Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
+
+        // 가방 안에 아이템이 있으면? (아이템 존재 여부)
+        if(bagEntity.isPresent()) {
+            BagEntity bag = bagEntity.get(); // 가방 안에 있는 아이템들을 가져온 걸 bag에 저장. 즉, bag = 유저 가방
+
+            if(bag.getAmount() >= amount) { // 가방 안에 판매하려는 아이템이 있다면?
+
+                bag.decreaseItemAmount(amount); // 아이템을 판매하고
+
+                // user의 잔고에 (user의 현재 돈 + (아이템 가격 * 아이템 개수)) 만큼의 money 추가
+                userEntity.setMoney(userMoney + (itemPrice * amount));
+
+                bagRepository.save(bag); // 가방 정보 저장
+                userRepository.save(userEntity); // user 정보 저장
+
+            } else {
+                // 판매하려는 아이템이 없을 때
+                System.out.println("판매하려는 아이템이 부족합니다.");
+                bagRepository.save(bag); // 가방 정보 저장
+                return false;
+            }
+        } else {
+            // 가방 안에 아이템 자체가 없을 때
+            System.out.println("가방 안에 아이템을 보유하고 있지 않아 아이템을 판매할 수 없습니다.");
+            return false;
+        }
+
+        userEntity.setMoney(userMoney + itemPrice);
         userRepository.save(userEntity);
         return true;
     }

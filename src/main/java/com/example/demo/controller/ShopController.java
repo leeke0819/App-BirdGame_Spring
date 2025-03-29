@@ -52,10 +52,10 @@ public class ShopController {
         return shopService.getItemName(itemName);
     }
 
-        @GetMapping("/money")
-        public List<UserEntity> getMoney(@RequestParam int money) {
-            return shopService.getMoney(money);
-        }
+    @GetMapping("/money")
+    public List<UserEntity> getMoney(@RequestParam int money) {
+        return shopService.getMoney(money);
+    }
 
     @PostMapping("/buy")
     public ResponseEntity<String> buyItem(@RequestParam String itemCode){
@@ -70,7 +70,7 @@ public class ShopController {
 
     @PostMapping("/sell")
     public ResponseEntity<String> sellItem(@RequestParam String itemCode) {
-        if(shopService.sellItem(itemCode)) {
+        if(shopService.sellItem(itemCode, 1)) {
             return ResponseEntity.ok("판매 성공");
         } else {
             return ResponseEntity.badRequest().body("판매할 아이템이 없습니다.");

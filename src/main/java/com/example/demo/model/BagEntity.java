@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,8 +14,6 @@ import lombok.Setter;
 @Setter
 public class BagEntity {
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -23,7 +22,6 @@ public class BagEntity {
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "item") // 외래 키
     private ItemEntity item;
 
     private int amount;
@@ -33,7 +31,7 @@ public class BagEntity {
         this.amount += amount;
     }
 
-    // item 양 줄이기 (item 사용 함수)
+    // item 양 줄이기 (item 판매 함수)
     public void decreaseItemAmount(int amount) {
         this.amount = Math.max(0, this.amount - amount);
     }

@@ -29,8 +29,4 @@ public class ItemEntity {
 
     private String imageRoot;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BagEntity> bags;
-
-
 }
