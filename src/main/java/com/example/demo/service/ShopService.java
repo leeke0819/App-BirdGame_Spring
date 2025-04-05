@@ -6,9 +6,11 @@ import com.example.demo.model.UserEntity;
 import com.example.demo.repository.BagRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -38,9 +40,15 @@ public class ShopService {
         return itemRepository.findByItemName(itemName);
     }
 
-    public Page<ItemEntity> getShopPageItems(int page, int size) {
+    public Page<ItemEntity> getShopPageItems(int page, int size, int category) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return itemRepository.findAll(pageable);
+        if (category == 1){
+            return itemRepository.findAllShopItems(pageable);
+        } else if ( category == 2) {
+            return itemRepository.findAllShopEggs(pageable);
+        }
+        return itemRepository.findAllShopItems(pageable);
     }
 
     public List<UserEntity> getMoney(int money) {

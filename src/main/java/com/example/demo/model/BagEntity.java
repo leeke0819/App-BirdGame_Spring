@@ -26,6 +26,7 @@ public class BagEntity {
 
     private int amount;
 
+
     // item 양 늘리기 (item 구매 함수)
     public void increaseItemAmount(int amount) {
         this.amount += amount;

@@ -22,11 +22,12 @@ public class BirdEntity {
     private int thirst;
     private int hungry;
     private int level;
+    private short status; //1 부화전 2부화 함 3 레벨업 몇이상...
+    private String imageRoot;
 
     @ManyToOne
     private UserEntity user;
 
     @ManyToOne
     private BirdTypeEntity birdTypeEntity;
-
 }

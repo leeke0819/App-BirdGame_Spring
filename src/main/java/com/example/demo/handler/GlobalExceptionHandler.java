@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.IllegalFormatException;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler{
@@ -28,6 +29,10 @@ public class GlobalExceptionHandler{
     @ExceptionHandler
     public ResponseEntity<String> handleNumberFormatException(NumberFormatException e){
         return ResponseEntity.status(401).body("사용자가 잘못된 포멧으로 접근했습니다.");
+    }
+    @ExceptionHandler
+    public ResponseEntity<String> NoSuchElementException(NoSuchElementException e){
+        return ResponseEntity.status(501).body("서버에 문제가 있습니다.");
     }
 
 }

@@ -3,7 +3,11 @@ package com.example.demo.service;
 import com.example.demo.Dto.LoginRequestDto;
 import com.example.demo.Dto.MyPageResponseDto;
 import com.example.demo.Dto.TokenDto;
+import com.example.demo.model.BagEntity;
+import com.example.demo.model.ItemEntity;
 import com.example.demo.model.UserEntity;
+import com.example.demo.repository.BagRepository;
+import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +18,28 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final AuthenticationManagerBuilder managerBuilder;
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BagRepository bagRepository;
 
-    public UserService(AuthenticationManagerBuilder managerBuilder, TokenProvider tokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(AuthenticationManagerBuilder managerBuilder, TokenProvider tokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, ItemRepository itemRepository, BagRepository bagRepository) {
         this.managerBuilder = managerBuilder;
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.itemRepository = itemRepository;
+        this.bagRepository = bagRepository;
     }
+
+    //함수로 분리...하는편이 좋습니다.
 
     public UserEntity saveUser(String email, String password, String nickname) {
 
@@ -51,7 +64,15 @@ public class UserService {
         userEntity.setNickname(nickname);
         userEntity.setMoney(10000);
         userEntity.setAuthority("USER");
+        BagEntity bagEntity = new BagEntity();
+        ItemEntity itemEntity = itemRepository.findByItemCode("egg_001").orElseThrow();
+        bagEntity.setUser(userEntity);
+        bagEntity.setItem(itemEntity);
+        bagEntity.setAmount(1);
         userRepository.save(userEntity);
+        bagRepository.save(bagEntity);
+
+        //여기서 BagEntity를 만들고.... 그 안에, 알과 .. 초반아이템들을 조금 넣어줘야한다...
         return userEntity;
     }
 

@@ -21,6 +21,12 @@ public class ItemEntity {
 
     private String itemName;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isEgg;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean isDisplay;
+
     private String itemDescription;
 
     private int price;

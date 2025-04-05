@@ -1,11 +1,21 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.ItemEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
     Optional<ItemEntity> findByItemName(String itemName);
     Optional<ItemEntity> findByItemCode(String itemCode);
+
+    @Query("SELECT i FROM ItemEntity i WHERE i.isDisplay = TRUE AND i.isEgg = FALSE")
+    Page<ItemEntity> findAllShopItems(Pageable pageable);
+
+    @Query("SELECT i FROM ItemEntity i WHERE i.isDisplay = FALSE AND i.isEgg = TRUE")
+    Page<ItemEntity> findAllShopEggs(Pageable pageable);
 }
