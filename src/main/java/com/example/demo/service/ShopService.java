@@ -6,11 +6,9 @@ import com.example.demo.model.UserEntity;
 import com.example.demo.repository.BagRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
-import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -51,9 +49,6 @@ public class ShopService {
         return itemRepository.findAllShopItems(pageable);
     }
 
-    public List<UserEntity> getMoney(int money) {
-        return userRepository.findByMoney(money);
-    }
 
     public boolean buyItem(String itemCode, int amount){
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //현재 로그인 한 사용자 이메일 가져오기
@@ -61,11 +56,11 @@ public class ShopService {
         UserEntity userEntity = userRepository.findByEmail(email); //현재 로그인한 사용자의 UserEntity, ''
 
         int itemPrice = itemEntity.getPrice(); //아이템의 현재 가격 가져오기
-        int userMoney = userEntity.getMoney(); //유저의 잔고 조회
+        int userMoney = userEntity.getGold(); //유저의 잔고 조회
         int totalPrice = itemPrice * amount;
 
         if(userMoney >= totalPrice){
-            userEntity.setMoney(userMoney-totalPrice);
+            userEntity.setGold(userMoney-totalPrice);
 
             // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
             Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
@@ -94,7 +89,7 @@ public class ShopService {
         ItemEntity itemEntity = itemRepository.findByItemCode(itemCode).orElseThrow();
         UserEntity userEntity = userRepository.findByEmail(email);
         int itemPrice = itemEntity.getPrice(); //아이템의 현재 가격 가져오기
-        int userMoney = userEntity.getMoney(); // 유저 잔고 조회
+        int userMoney = userEntity.getGold(); // 유저 잔고 조회
 
         // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
         Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
@@ -108,7 +103,7 @@ public class ShopService {
                 bag.decreaseItemAmount(amount); // 아이템을 판매하고
 
                 // user의 잔고에 (user의 현재 돈 + (아이템 가격 * 아이템 개수)) 만큼의 money 추가
-                userEntity.setMoney(userMoney + (itemPrice * amount));
+                userEntity.setGold(userMoney + (itemPrice * amount));
 
                 bagRepository.save(bag); // 가방 정보 저장
                 userRepository.save(userEntity); // user 정보 저장
@@ -125,7 +120,7 @@ public class ShopService {
             return false;
         }
 
-        userEntity.setMoney(userMoney + itemPrice);
+        userEntity.setGold(userMoney + itemPrice);
         userRepository.save(userEntity);
         return true;
     }

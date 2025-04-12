@@ -29,6 +29,7 @@ public class BagController {
         this.bagRepository = bagRepository;
     }
 
+    //PageNo를 받아서... 가방 페이지별 조회
     @GetMapping("/page")
     public ResponseEntity<List<InventoryResponseDto>> bagPage(@RequestParam String pageNo) {
         try {
@@ -40,6 +41,7 @@ public class BagController {
         }
     }
 
+    //repository 호출 조정 요망
     @GetMapping("/my-bag")
     public List<BagEntity> getMyBag() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

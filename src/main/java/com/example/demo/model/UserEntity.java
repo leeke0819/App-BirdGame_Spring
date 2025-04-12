@@ -23,7 +23,7 @@ public class UserEntity {
 
     private String nickname;
 
-    private Integer money;
+    private Integer gold;
 
     private String Authority;
 

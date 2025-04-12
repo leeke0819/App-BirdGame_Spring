@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.Dto.LoginRequestDto;
 import com.example.demo.Dto.MyPageResponseDto;
 import com.example.demo.Dto.TokenDto;
+import com.example.demo.Dto.UpdateUserInfoRequestDto;
 import com.example.demo.model.BagEntity;
 import com.example.demo.model.ItemEntity;
 import com.example.demo.model.UserEntity;
@@ -10,13 +11,14 @@ import com.example.demo.repository.BagRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +64,7 @@ public class UserService {
         userEntity.setEmail(email);
         userEntity.setPassword(passwordEncoder.encode(password));
         userEntity.setNickname(nickname);
-        userEntity.setMoney(10000);
+        userEntity.setGold(10000);
         userEntity.setAuthority("USER");
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001").orElseThrow();
@@ -103,13 +105,38 @@ public class UserService {
 
         MyPageResponseDto myPageResponseDto = new MyPageResponseDto(); // 객체 생성
 
-        System.out.println(userEntity.getMoney()); // userEntity에서 돈을 가져와서 출력
+        System.out.println(userEntity.getGold()); // userEntity에서 돈을 가져와서 출력
         System.out.println(userEntity.getNickname()); // userEntity에서 닉네임을 가져와서 출력
 
-        myPageResponseDto.setMoney(userEntity.getMoney());
+        myPageResponseDto.setGold(userEntity.getGold());
         myPageResponseDto.setNickname(userEntity.getNickname());
 
         return myPageResponseDto;
+    }
+
+    @Transactional
+    public boolean deleteUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(userRepository.existsByEmail(email)) {
+            bagRepository.deleteByUserEmail(email);
+            userRepository.deleteByEmail(email);
+            return true;
+        }else{
+            throw new EntityNotFoundException("email에 해당하는 유저가 존재하지않거나 이미 제거되었습니다.");
+        }
+    }
+
+    public String updateUserInfo(UpdateUserInfoRequestDto updateUserInfoRequestDto) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity userEntity = userRepository.findByEmail(email);
+        userEntity.setGold(updateUserInfoRequestDto.getGold());
+        userEntity.setNickname(updateUserInfoRequestDto.getNickname());
+        userRepository.save(userEntity);
+        return "성공";
+    }
+
+    public List<UserEntity> getMoney(int money) {
+        return userRepository.findByGold(money);
     }
 
 }

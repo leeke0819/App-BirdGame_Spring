@@ -1,6 +1,7 @@
 package com.example.demo.handler;
 
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +34,10 @@ public class GlobalExceptionHandler{
     @ExceptionHandler
     public ResponseEntity<String> NoSuchElementException(NoSuchElementException e){
         return ResponseEntity.status(501).body("서버에 문제가 있습니다.");
+    }
+    @ExceptionHandler
+    public ResponseEntity<String> EntityNotFoundException(EntityNotFoundException e){
+        return ResponseEntity.status(404).body(String.valueOf(e));
     }
 
 }

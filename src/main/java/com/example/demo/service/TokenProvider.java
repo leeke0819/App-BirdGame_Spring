@@ -57,6 +57,7 @@ public class TokenProvider {
                 .tokenExpiresIn(tokenExpiresIn.getTime())               //UNIX Time반환
                 .build();
     }
+
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
         if (claims.get(AUTHORITIES_KEY) == null) {
@@ -88,6 +89,7 @@ public class TokenProvider {
         }
         return false;
     }
+
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
