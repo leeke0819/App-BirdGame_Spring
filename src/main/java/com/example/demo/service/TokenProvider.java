@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.Dto.TokenDto;
+import com.example.demo.Dto.response.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -80,6 +80,7 @@ public class TokenProvider {
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             System.out.println("잘못된 JWT 서명입니다, refreshToken으로 요청처리도 여기서 해결");
+            //예외던지기
         } catch (ExpiredJwtException e) {
             System.out.println("만료된 JWT 토큰");
         } catch (UnsupportedJwtException e) {
@@ -87,6 +88,7 @@ public class TokenProvider {
         } catch (IllegalArgumentException e) {
             System.out.println("JWT 토큰이 잘못됨");
         }
+        //TODO: 토큰 상태에 따른 GlobalException Handler와의 연동 필요
         return false;
     }
 

@@ -62,7 +62,7 @@ public class ShopController {
             UserEntity userEntity = userRepository.findByEmail(email);
 
             response.put("buy_status", "성공");
-            response.put("user_money", userEntity.getGold());
+            response.put("user_gold", userEntity.getGold());
             return ResponseEntity.ok(response);
         }
         else{
@@ -81,7 +81,7 @@ public class ShopController {
             UserEntity userEntity = userRepository.findByEmail(email);
 
             response.put("sell_status", "성공");
-            response.put("user_money", userEntity.getGold());
+            response.put("user_gold", userEntity.getGold());
             return ResponseEntity.ok(response);
         } else {
             response.put("error_message", "판매할 아이템이 없습니다.");

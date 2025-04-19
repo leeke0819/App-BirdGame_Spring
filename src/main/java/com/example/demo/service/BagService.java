@@ -1,11 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.Dto.InventoryResponseDto;
+import com.example.demo.Dto.request.InventoryResponseDto;
 import com.example.demo.model.BagEntity;
-import com.example.demo.model.UserEntity;
 import com.example.demo.repository.BagRepository;
-import com.example.demo.repository.ItemRepository;
-import com.example.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

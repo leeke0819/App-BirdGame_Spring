@@ -56,11 +56,11 @@ public class ShopService {
         UserEntity userEntity = userRepository.findByEmail(email); //현재 로그인한 사용자의 UserEntity, ''
 
         int itemPrice = itemEntity.getPrice(); //아이템의 현재 가격 가져오기
-        int userMoney = userEntity.getGold(); //유저의 잔고 조회
+        int userGold = userEntity.getGold(); //유저의 잔고 조회
         int totalPrice = itemPrice * amount;
 
-        if(userMoney >= totalPrice){
-            userEntity.setGold(userMoney-totalPrice);
+        if(userGold >= totalPrice){
+            userEntity.setGold(userGold-totalPrice);
 
             // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
             Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
@@ -89,7 +89,7 @@ public class ShopService {
         ItemEntity itemEntity = itemRepository.findByItemCode(itemCode).orElseThrow();
         UserEntity userEntity = userRepository.findByEmail(email);
         int itemPrice = itemEntity.getPrice(); //아이템의 현재 가격 가져오기
-        int userMoney = userEntity.getGold(); // 유저 잔고 조회
+        int userGold = userEntity.getGold(); // 유저 잔고 조회
 
         // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
         Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
@@ -102,8 +102,8 @@ public class ShopService {
 
                 bag.decreaseItemAmount(amount); // 아이템을 판매하고
 
-                // user의 잔고에 (user의 현재 돈 + (아이템 가격 * 아이템 개수)) 만큼의 money 추가
-                userEntity.setGold(userMoney + (itemPrice * amount));
+                // user의 잔고에 (user의 현재 돈 + (아이템 가격 * 아이템 개수)) 만큼의 Gold 추가
+                userEntity.setGold(userGold + (itemPrice * amount));
 
                 bagRepository.save(bag); // 가방 정보 저장
                 userRepository.save(userEntity); // user 정보 저장
@@ -120,7 +120,7 @@ public class ShopService {
             return false;
         }
 
-        userEntity.setGold(userMoney + itemPrice);
+        userEntity.setGold(userGold + itemPrice);
         userRepository.save(userEntity);
         return true;
     }

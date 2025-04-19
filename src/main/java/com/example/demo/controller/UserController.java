@@ -1,17 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.Dto.MyPageResponseDto;
-import com.example.demo.Dto.UpdateUserInfoRequestDto;
-import com.example.demo.Dto.UserInfoRequestDto;
+import com.example.demo.Dto.response.MyPageResponseDto;
+import com.example.demo.Dto.request.UpdateUserInfoRequestDto;
+import com.example.demo.Dto.request.UserInfoRequestDto;
 import com.example.demo.model.UserEntity;
-import com.example.demo.service.BagService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -50,11 +46,6 @@ public class UserController {
         }else{
             return ResponseEntity.status(500).body("서버에 문제가 있습니다.");
         }
-    }
-
-    @GetMapping("/gold")
-    public List<UserEntity> getGold(@RequestParam int money) {
-        return userService.getMoney(money);
     }
 
 }

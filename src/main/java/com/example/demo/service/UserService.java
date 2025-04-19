@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.Dto.LoginRequestDto;
-import com.example.demo.Dto.MyPageResponseDto;
-import com.example.demo.Dto.TokenDto;
-import com.example.demo.Dto.UpdateUserInfoRequestDto;
+import com.example.demo.Dto.request.LoginRequestDto;
+import com.example.demo.Dto.response.MyPageResponseDto;
+import com.example.demo.Dto.response.TokenDto;
+import com.example.demo.Dto.request.UpdateUserInfoRequestDto;
 import com.example.demo.model.BagEntity;
 import com.example.demo.model.ItemEntity;
 import com.example.demo.model.UserEntity;
@@ -19,9 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -65,7 +62,10 @@ public class UserService {
         userEntity.setPassword(passwordEncoder.encode(password));
         userEntity.setNickname(nickname);
         userEntity.setGold(10000);
+        userEntity.setStarCoin(20);
         userEntity.setAuthority("USER");
+        userEntity.setExp(0);
+        userEntity.setLevel(1);
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001").orElseThrow();
         bagEntity.setUser(userEntity);
@@ -110,6 +110,11 @@ public class UserService {
 
         myPageResponseDto.setGold(userEntity.getGold());
         myPageResponseDto.setNickname(userEntity.getNickname());
+        myPageResponseDto.setUserExp(userEntity.getExp());
+        myPageResponseDto.setStarCoin(userEntity.getStarCoin());
+        myPageResponseDto.setUserLevel(userEntity.getLevel());
+        //TODO:여기서 레벨 별 경험치 총량 불러와서 myPageResponseDto에 삽입, Level별 경험치 총량은 enum형태로 관리하거나, Static변수를 모아놓은 Public 클래스로 관리하는게 좋을듯.
+
 
         return myPageResponseDto;
     }
@@ -133,10 +138,6 @@ public class UserService {
         userEntity.setNickname(updateUserInfoRequestDto.getNickname());
         userRepository.save(userEntity);
         return "성공";
-    }
-
-    public List<UserEntity> getMoney(int money) {
-        return userRepository.findByGold(money);
     }
 
 }

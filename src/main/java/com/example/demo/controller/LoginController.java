@@ -1,8 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.Dto.LoginRequestDto;
-import com.example.demo.Dto.TokenDto;
-import com.example.demo.model.UserEntity;
+import com.example.demo.Dto.request.LoginRequestDto;
+import com.example.demo.Dto.response.TokenDto;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
