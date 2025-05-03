@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
@@ -46,6 +49,14 @@ public class UserController {
         }else{
             return ResponseEntity.status(500).body("서버에 문제가 있습니다.");
         }
+    }
+
+    @GetMapping("/gold")
+    public ResponseEntity<Map<String, Integer>> getUserGold() {
+        Integer gold = userService.getGoldByEmail();
+        Map<String, Integer> response = new HashMap<>();
+        response.put("gold", gold);
+        return ResponseEntity.ok(response);
     }
 
 }

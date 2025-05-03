@@ -140,4 +140,9 @@ public class UserService {
         return "성공";
     }
 
+    public Integer getGoldByEmail() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findGoldByEmail(email);
+    }
+
 }
