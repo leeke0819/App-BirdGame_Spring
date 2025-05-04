@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByNickname(String nickname);
     void deleteByEmail(String email);
 
-    @Query("SELECT u.gold FROM User u WHERE u.email = :email")
+    @Query("SELECT u.gold FROM UserEntity u WHERE u.email = :email")
     Integer findGoldByEmail(@Param("email") String email);
 
 }
