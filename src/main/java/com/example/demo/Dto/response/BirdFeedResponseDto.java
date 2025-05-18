@@ -8,9 +8,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class BirdFeedResponseDto {
-    private String birdName;
-    private Integer birdLevel;
     private Integer birdHungry;
     private Integer birdThirst;
-    private String status;
 }

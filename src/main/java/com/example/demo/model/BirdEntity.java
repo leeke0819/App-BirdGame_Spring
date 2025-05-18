@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Setter
 public class BirdEntity {
     @Id
+    @GeneratedValue
     private int id;
     private String name;
     private int age;
@@ -31,4 +33,18 @@ public class BirdEntity {
 
     @ManyToOne
     private BirdTypeEntity birdTypeEntity;
+
+    public BirdEntity(String name){
+        this.name = name;
+        this.age = 1;
+        this.health = 20;
+        this.thirst = 10;
+        this.exp = 0;
+        this.hungry = 10;
+        this.level = 1;
+        //TODO:: Status, imageRoot 동적 변경 필요
+        this.status = 2;
+        this.imageRoot = "1111";
+    }
+
 }

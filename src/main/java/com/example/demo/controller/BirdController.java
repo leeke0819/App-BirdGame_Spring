@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.Dto.request.BirdFeedRequestDto;
+import com.example.demo.Dto.response.BirdFeedResponseDto;
 import com.example.demo.Dto.response.MyPageResponseDto;
 import com.example.demo.service.BirdService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,12 +19,14 @@ public class BirdController {
     @Autowired
     private BirdService birdService;
 
+//    @PostMapping("/hatch")
+//    public birdHatch(@RequestBody )
+
     @PostMapping("/feed")
-    public MyPageResponseDto birdFeed(@RequestBody BirdFeedRequestDto birdFeedRequestDto) throws Exception {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<BirdFeedResponseDto> birdFeed(@RequestBody BirdFeedRequestDto birdFeedRequestDto) throws Exception {
         String itemCode = birdFeedRequestDto.getItemCode();
         int amount = birdFeedRequestDto.getAmount();
 
-        return birdService.birdGiveFood(itemCode);
+        return ResponseEntity.ok(birdService.birdGiveFood(itemCode, amount));
     }
 }

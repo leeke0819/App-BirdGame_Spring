@@ -46,54 +46,46 @@ public class BirdService {
 //        userRepository.save(userEntity);
 //        return true;
 //    }
-    public MyPageResponseDto birdGiveFood(String itemCode) throws Exception {
+    public BirdFeedResponseDto birdGiveFood(String itemCode, int amount) throws Exception {
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //현재 로그인 한 사용자 이메일 가져오기
         // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
         Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
-        if(bagEntity.isPresent()) {
-            MyPageResponseDto myPageResponseDto = new MyPageResponseDto();
-            BagEntity bag = bagEntity.get();
-            if (bag.getAmount() - 1 < 0){
-                System.out.println("새에게 줄 아이템이 부족합니다.");
-                deleteUserBagItem(bag);
-            } else{
-                int updateAmount = bag.getAmount() - 1;
-                System.out.println("새에게 먹이를 줬습니다!");
-                bag.setAmount(updateAmount);
-
-                if (updateAmount <= 0) {
-                    bagRepository.delete(bag);
-                } else {
-                    bagRepository.save(bag);
-                }
-
-                Optional<BirdEntity> birdObject = birdRepository.findByUserEmail(email);
-                if(birdObject.isPresent()) {
-                    BirdFeedResponseDto birdFeedResponseDto = new BirdFeedResponseDto();
-                    ItemEntity itemEntity = itemRepository.findByItemCode(itemCode).orElseThrow();
-                    BirdEntity bird = birdObject.get();
-                    if(itemEntity.getItemType() == 1){
-                        bird.setHungry(bird.getHungry() + itemEntity.getFeed());
-                    }else if(itemEntity.getItemType() == 2){
-                        bird.setHungry(bird.getThirst() + itemEntity.getFeed());
-                    }else{
-                        throw new Exception("먹일 수 없는 아이템 입니다.");
-                    }
-                    //저장
-                    birdRepository.save(bird);
-                }
-
-                //TODO :: 다음주까지
-                //1. 여기서 이제 개수 줄여주고
-                //2. DB에 다시 저장하는 로직
-                //3. user가 갖고있는 bird Entity 불러오기
-                //4. bird의 EXP라던가 기타 수정사항들 수정하고...
-                //5. 다시저장 .. ㅋㅋ
-            
-            }
+        System.out.println(bagEntity);
+        System.out.println(email);
+        System.out.println(itemCode);
+        if(bagEntity.isEmpty()) {
+            throw new RuntimeException("가방에 아이템이 충분하지 않습니다.");
         }
-        return null;
+        BagEntity bag = bagEntity.get();
+        if (bag.getAmount() - amount < 0){ //수량 충분 검사
+            throw new RuntimeException("새에게 줄 아이템이 부족합니다.");
+        }
+        int updateAmount = bag.getAmount() - amount;
+        bag.setAmount(bag.getAmount() - amount);
+        if (updateAmount <= 0) {
+            deleteUserBagItem(bag);
+        }
+        Optional<BirdEntity> birdObject = birdRepository.findByUserEmail(email);
+        if(birdObject.isEmpty()){
+            throw new RuntimeException("해당하는 새를 찾을 수 없습니다.");
+        }
+        BirdFeedResponseDto birdFeedResponseDto = new BirdFeedResponseDto();
+        ItemEntity itemEntity = itemRepository.findByItemCode(itemCode).orElseThrow();
+        BirdEntity bird = birdObject.get();
+        if(!(itemEntity.getItemType() == 1 || itemEntity.getItemType() == 2)){
+            throw new RuntimeException("먹일 수 없는 아이템 입니다.");
+        }
+        int birdHuger = (bird.getHungry() + itemEntity.getFeed()) * amount;
+        int birdThirst = (bird.getThirst() + itemEntity.getThirst()) * amount;
+        birdFeedResponseDto.setBirdHungry(birdHuger);
+        birdFeedResponseDto.setBirdThirst(birdThirst);
+        bird.setHungry(birdHuger);
+        bird.setThirst(birdThirst);
+        birdRepository.save(bird);
+        bagRepository.save(bag);
+        return birdFeedResponseDto;
     }
+
     @Transactional
     public void deleteUserBagItem(BagEntity bagEntity){
         //여기 bagEntity를 delete하는 로직

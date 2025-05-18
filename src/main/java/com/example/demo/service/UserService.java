@@ -5,9 +5,11 @@ import com.example.demo.Dto.response.MyPageResponseDto;
 import com.example.demo.Dto.response.TokenDto;
 import com.example.demo.Dto.request.UpdateUserInfoRequestDto;
 import com.example.demo.model.BagEntity;
+import com.example.demo.model.BirdEntity;
 import com.example.demo.model.ItemEntity;
 import com.example.demo.model.UserEntity;
 import com.example.demo.repository.BagRepository;
+import com.example.demo.repository.BirdRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -28,14 +30,17 @@ public class UserService {
     private final ItemRepository itemRepository;
     private final PasswordEncoder passwordEncoder;
     private final BagRepository bagRepository;
+    private final BirdRepository birdRepository;
 
-    public UserService(AuthenticationManagerBuilder managerBuilder, TokenProvider tokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, ItemRepository itemRepository, BagRepository bagRepository) {
+
+    public UserService(AuthenticationManagerBuilder managerBuilder, TokenProvider tokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, ItemRepository itemRepository, BagRepository bagRepository, BirdRepository birdRepository) {
         this.managerBuilder = managerBuilder;
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.itemRepository = itemRepository;
         this.bagRepository = bagRepository;
+        this.birdRepository = birdRepository;
     }
 
     //함수로 분리...하는편이 좋습니다.
@@ -68,12 +73,14 @@ public class UserService {
         userEntity.setLevel(1);
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001").orElseThrow();
+        BirdEntity birdEntity = new BirdEntity("이쁜 새 ");
+        birdEntity.setUser(userEntity);
         bagEntity.setUser(userEntity);
         bagEntity.setItem(itemEntity);
         bagEntity.setAmount(1);
         userRepository.save(userEntity);
         bagRepository.save(bagEntity);
-
+        birdRepository.save(birdEntity);
         //여기서 BagEntity를 만들고.... 그 안에, 알과 .. 초반아이템들을 조금 넣어줘야한다...
         return userEntity;
     }
