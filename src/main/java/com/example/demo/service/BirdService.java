@@ -1,7 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.Dto.response.BirdFeedResponseDto;
+import com.example.demo.Dto.response.MyPageResponseDto;
 import com.example.demo.model.BagEntity;
+import com.example.demo.model.BirdEntity;
+import com.example.demo.model.ItemEntity;
 import com.example.demo.repository.BagRepository;
+import com.example.demo.repository.BirdRepository;
+import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,10 +22,14 @@ public class BirdService {
     // ShopService의 buyItem처럼..
     final private UserRepository userRepository;
     final private BagRepository bagRepository;
+    final private BirdRepository birdRepository;
+    final private ItemRepository itemRepository;
 
-    public BirdService(UserRepository userRepository, BagRepository bagRepository) {
+    public BirdService(UserRepository userRepository, BagRepository bagRepository, BirdRepository birdRepository, ItemRepository itemRepository) {
         this.userRepository = userRepository;
         this.bagRepository = bagRepository;
+        this.birdRepository = birdRepository;
+        this.itemRepository = itemRepository;
     }
 
 //    // 미완성 코드 ..
@@ -36,15 +46,43 @@ public class BirdService {
 //        userRepository.save(userEntity);
 //        return true;
 //    }
-    public boolean birdGiveFood(String itemCode, String amount) {
+    public MyPageResponseDto birdGiveFood(String itemCode) throws Exception {
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //현재 로그인 한 사용자 이메일 가져오기
         // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
         Optional<BagEntity> bagEntity = bagRepository.findByUserEmailAndItemCode(email,itemCode);
         if(bagEntity.isPresent()) {
+            MyPageResponseDto myPageResponseDto = new MyPageResponseDto();
             BagEntity bag = bagEntity.get();
             if (bag.getAmount() - 1 < 0){
+                System.out.println("새에게 줄 아이템이 부족합니다.");
                 deleteUserBagItem(bag);
-            }else{
+            } else{
+                int updateAmount = bag.getAmount() - 1;
+                System.out.println("새에게 먹이를 줬습니다!");
+                bag.setAmount(updateAmount);
+
+                if (updateAmount <= 0) {
+                    bagRepository.delete(bag);
+                } else {
+                    bagRepository.save(bag);
+                }
+
+                Optional<BirdEntity> birdObject = birdRepository.findByUserEmail(email);
+                if(birdObject.isPresent()) {
+                    BirdFeedResponseDto birdFeedResponseDto = new BirdFeedResponseDto();
+                    ItemEntity itemEntity = itemRepository.findByItemCode(itemCode).orElseThrow();
+                    BirdEntity bird = birdObject.get();
+                    if(itemEntity.getItemType() == 1){
+                        bird.setHungry(bird.getHungry() + itemEntity.getFeed());
+                    }else if(itemEntity.getItemType() == 2){
+                        bird.setHungry(bird.getThirst() + itemEntity.getFeed());
+                    }else{
+                        throw new Exception("먹일 수 없는 아이템 입니다.");
+                    }
+                    //저장
+                    birdRepository.save(bird);
+                }
+
                 //TODO :: 다음주까지
                 //1. 여기서 이제 개수 줄여주고
                 //2. DB에 다시 저장하는 로직
@@ -54,6 +92,7 @@ public class BirdService {
             
             }
         }
+        return null;
     }
     @Transactional
     public void deleteUserBagItem(BagEntity bagEntity){

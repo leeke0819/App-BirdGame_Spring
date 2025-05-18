@@ -83,6 +83,7 @@ public class UserService {
 
         System.out.println(loginRequestDto.getEmail() + loginRequestDto.getPassword());
 
+
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
 

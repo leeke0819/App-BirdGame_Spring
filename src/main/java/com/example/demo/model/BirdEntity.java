@@ -20,6 +20,7 @@ public class BirdEntity {
     private int age;
     private int health;
     private int thirst;
+    private int exp;
     private int hungry;
     private int level;
     private short status; //1 부화전 2부화 함 3 레벨업 몇이상...

@@ -21,18 +21,24 @@ public class ItemEntity {
 
     private String itemName;
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isEgg;
+    private int itemType; //목마름을 채우는 Type, 배고픔을 채우는 Type, 혹은 먹일수 없는 Type
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private boolean isDisplay;
+    private short status;
+
+    private int feed; //얼마만큼 배고픔(혹은 목마름)을 채울것인가.
+
+    private int  thirst;
 
     private String itemDescription;
 
     private int price;
 
-    private short type;
-
     private String imageRoot;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isEgg;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean isDisplay;
 
 }
