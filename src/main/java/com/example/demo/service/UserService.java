@@ -73,6 +73,8 @@ public class UserService {
         userEntity.setLevel(1);
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001").orElseThrow();
+        //TODO:: 디버그 용 예외 던질 필요있음
+
         BirdEntity birdEntity = new BirdEntity("이쁜 새 ");
         birdEntity.setUser(userEntity);
         bagEntity.setUser(userEntity);
@@ -87,20 +89,13 @@ public class UserService {
 
     public TokenDto loginUser(LoginRequestDto loginRequestDto) {
         UserEntity userEntity = userRepository.findByEmail(loginRequestDto.getEmail());
-
         System.out.println(loginRequestDto.getEmail() + loginRequestDto.getPassword());
-
-
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
-
         System.out.println(authenticationToken);
-
         Authentication authentication
                 = managerBuilder.getObject().authenticate(authenticationToken);
-
         System.out.println(authentication);
-
         return tokenProvider.generateTokenDto(authentication);
     }
 

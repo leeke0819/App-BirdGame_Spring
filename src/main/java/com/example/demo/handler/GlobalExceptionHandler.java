@@ -45,5 +45,6 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> NoSuchElementException(NoSuchElementException e){
         return ResponseEntity.status(501).body("서버에 문제가 있습니다.");
     }
+    //TODO:: RunTimeException 예외처리 해주기.
 
 }

@@ -11,5 +11,5 @@ public class ItemDto {
     private String itemDescription;
     private int price;
     private short type;
-    private String imageRoot;
+       private String imageRoot;
 }
