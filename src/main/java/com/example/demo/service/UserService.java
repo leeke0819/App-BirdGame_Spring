@@ -72,8 +72,10 @@ public class UserService {
         userEntity.setExp(0);
         userEntity.setLevel(1);
         BagEntity bagEntity = new BagEntity();
-        ItemEntity itemEntity = itemRepository.findByItemCode("egg_001").orElseThrow();
+        ItemEntity itemEntity = itemRepository.findByItemCode("egg_001")
+                .orElseThrow(() -> new EntityNotFoundException("기본 알 아이템(egg_001)을 찾을 수 없습니다."));
         //TODO:: 디버그 용 예외 던질 필요있음
+
 
         BirdEntity birdEntity = new BirdEntity("이쁜 새 ");
         birdEntity.setUser(userEntity);

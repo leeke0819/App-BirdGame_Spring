@@ -1,6 +1,7 @@
 package com.example.demo.handler;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,14 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> ExpiredJwtException(ExpiredJwtException e) {
         return ResponseEntity.status(401).body("토큰이 만료되었습니다.");
     }
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<String> handleSecurityException(SecurityException e) {
+        return ResponseEntity.status(401).body("잘못된 JWT 서명입니다.");
+    }
+    @ExceptionHandler(UnsupportedJwtException.class)
+    public ResponseEntity<String> handleUnsupportedJwtException(UnsupportedJwtException e) {
+        return ResponseEntity.status(401).body("지원되지 않는 JWT 토큰입니다.");
+    }
     @ExceptionHandler
     public ResponseEntity<String> EntityNotFoundException(EntityNotFoundException e){
         return ResponseEntity.status(404).body(String.valueOf(e));
@@ -45,6 +54,12 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> NoSuchElementException(NoSuchElementException e){
         return ResponseEntity.status(501).body("서버에 문제가 있습니다.");
     }
+
     //TODO:: RunTimeException 예외처리 해주기.
+    @ExceptionHandler
+    public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.status(500).body("처리 중 문제가 발생했습니다.");
+    }
+
 
 }
