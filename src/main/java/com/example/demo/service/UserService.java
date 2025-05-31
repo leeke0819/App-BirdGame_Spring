@@ -61,6 +61,10 @@ public class UserService {
         if (!password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$")) {
             throw new IllegalArgumentException("비밀번호는 대문자, 소문자, 숫자를 최소 하나씩 포함해야 합니다.");
         }
+        if (nickname.isEmpty() || nickname.length() > 5) {
+            throw new IllegalArgumentException("닉네임은 1자 이상 5자 이하로 설정해야 합니다.");
+        }
+
 
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(email);
@@ -70,7 +74,6 @@ public class UserService {
         userEntity.setStarCoin(20);
         userEntity.setAuthority("USER");
         userEntity.setExp(0);
-        userEntity.setLevel(1);
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001")
                 .orElseThrow(() -> new EntityNotFoundException("기본 알 아이템(egg_001)을 찾을 수 없습니다."));
@@ -117,7 +120,10 @@ public class UserService {
         myPageResponseDto.setNickname(userEntity.getNickname());
         myPageResponseDto.setUserExp(userEntity.getExp());
         myPageResponseDto.setStarCoin(userEntity.getStarCoin());
-        myPageResponseDto.setUserLevel(userEntity.getLevel());
+        UserExperienceLevel level = UserExperienceLevel.findByExp(userEntity.getExp());
+        myPageResponseDto.setMaxExp(level.getMaxExp());
+        //...
+
         //TODO:여기서 레벨 별 경험치 총량 불러와서 myPageResponseDto에 삽입, Level별 경험치 총량은 enum형태로 관리하거나, Static변수를 모아놓은 Public 클래스로 관리하는게 좋을듯.
 
 
@@ -148,6 +154,11 @@ public class UserService {
     public Integer getGoldByEmail() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findGoldByEmail(email);
+    }
+
+    public String getNicknameByEmail() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email).getNickname();
     }
 
 }

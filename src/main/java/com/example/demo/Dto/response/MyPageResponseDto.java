@@ -12,6 +12,7 @@ public class MyPageResponseDto {
     String nickname;
     Integer userLevel;
     Integer userExp;
+    Integer minExp;
     Integer maxExp;
     Integer gold;
     Integer starCoin;

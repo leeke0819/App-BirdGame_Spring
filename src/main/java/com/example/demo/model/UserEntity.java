@@ -30,7 +30,7 @@ public class UserEntity {
     private String Authority;
 
     private int exp;
-    private int level;
+    //private int level;
 
     //유저의 레벨과 경험치 추가.
     //프로필 아이콘 url 추가 (추후에..)

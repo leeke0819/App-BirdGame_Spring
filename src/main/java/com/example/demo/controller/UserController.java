@@ -59,4 +59,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+//    @GetMapping("/nickname")
+//    public ResponseEntity<Map<String, String>> getUserNickname() {
+//        String nickname = userService.getNicknameByEmail();
+//        Map<String, String> response = new HashMap<>();
+//        response.put("nickname", nickname);
+//        return ResponseEntity.ok(response);
+//    }
+
 }
