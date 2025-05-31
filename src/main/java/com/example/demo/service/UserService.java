@@ -74,6 +74,7 @@ public class UserService {
         userEntity.setStarCoin(20);
         userEntity.setAuthority("USER");
         userEntity.setExp(0);
+        userEntity.setLevel(1);
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001")
                 .orElseThrow(() -> new EntityNotFoundException("기본 알 아이템(egg_001)을 찾을 수 없습니다."));
@@ -120,6 +121,7 @@ public class UserService {
         myPageResponseDto.setNickname(userEntity.getNickname());
         myPageResponseDto.setUserExp(userEntity.getExp());
         myPageResponseDto.setStarCoin(userEntity.getStarCoin());
+        myPageResponseDto.setUserLevel(userEntity.getLevel());
         //UserExperienceLevel level = UserExperienceLevel.findByExp(userEntity.getExp());
         //myPageResponseDto.setMaxExp(level.getMaxExp());
         //...
