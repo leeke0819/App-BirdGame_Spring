@@ -121,11 +121,10 @@ public class UserService {
         myPageResponseDto.setNickname(userEntity.getNickname());
         myPageResponseDto.setUserExp(userEntity.getExp());
         myPageResponseDto.setStarCoin(userEntity.getStarCoin());
-        myPageResponseDto.setUserLevel(userEntity.getLevel());
-        //UserExperienceLevel level = UserExperienceLevel.findByExp(userEntity.getExp());
-        //myPageResponseDto.setMaxExp(level.getMaxExp());
-        //...
-
+        UserExperienceLevel level = UserExperienceLevel.findByExp(userEntity.getExp());
+        myPageResponseDto.setUserLevel(level.getLevel());
+        myPageResponseDto.setMaxExp(level.getMaxExp());
+        myPageResponseDto.setMinExp(level.getMinExp());
         //TODO:여기서 레벨 별 경험치 총량 불러와서 myPageResponseDto에 삽입, Level별 경험치 총량은 enum형태로 관리하거나, Static변수를 모아놓은 Public 클래스로 관리하는게 좋을듯.
 
 
