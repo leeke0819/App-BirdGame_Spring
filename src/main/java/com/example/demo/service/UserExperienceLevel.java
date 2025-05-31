@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum UserExperienceLevel {
-    LV1(1, 1, 10),
+    LV1(1, 0, 10),
     LV2(2, 11, 25),
     LV3(3, 26, 50),
     LV4(4, 51, 90),
