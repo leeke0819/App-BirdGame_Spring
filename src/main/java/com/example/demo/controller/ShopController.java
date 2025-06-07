@@ -16,7 +16,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/shop")
-public class ShopController {
+public class    ShopController {
 
     final private ShopService shopService;
     final private UserRepository userRepository;

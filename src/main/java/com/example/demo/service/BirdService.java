@@ -64,6 +64,9 @@ public class BirdService {
         bag.setAmount(bag.getAmount() - amount);
         if (updateAmount <= 0) {
             deleteUserBagItem(bag);
+        } else {
+            bag.setAmount(updateAmount);
+            bagRepository.save(bag);
         }
         Optional<BirdEntity> birdObject = birdRepository.findByUserEmail(email);
         if(birdObject.isEmpty()){
@@ -82,7 +85,6 @@ public class BirdService {
         bird.setHungry(birdHuger);
         bird.setThirst(birdThirst);
         birdRepository.save(bird);
-        bagRepository.save(bag);
         return birdFeedResponseDto;
     }
 

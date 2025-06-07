@@ -46,7 +46,7 @@ public class UserService {
     //함수로 분리...하는편이 좋습니다.
 
     public UserEntity saveUser(String email, String password, String nickname) {
-
+        //전처리, 입력검사
         if (userRepository.existsByEmail(email)) {
             throw new EntityExistsException("이미 존재하는 이메일입니다.");
         }
@@ -65,7 +65,7 @@ public class UserService {
             throw new IllegalArgumentException("닉네임은 1자 이상 5자 이하로 설정해야 합니다.");
         }
 
-
+        //유저 생성
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(email);
         userEntity.setPassword(passwordEncoder.encode(password));
@@ -75,6 +75,8 @@ public class UserService {
         userEntity.setAuthority("USER");
         userEntity.setExp(0);
         userEntity.setLevel(1);
+
+        //가방 생성
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001")
                 .orElseThrow(() -> new EntityNotFoundException("기본 알 아이템(egg_001)을 찾을 수 없습니다."));
