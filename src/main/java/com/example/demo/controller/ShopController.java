@@ -54,10 +54,10 @@ public class    ShopController {
 
     //개별 물품 구매
     @PostMapping("/buy")
-    public ResponseEntity<Map<String, Object>> buyItem(@RequestParam String itemCode){
+    public ResponseEntity<Map<String, Object>> buyItem(@RequestParam String itemCode, @RequestParam(defaultValue = "1") int amount){
         Map<String, Object> response = new HashMap<>(); // 응답을 담을 맵 생성
 
-        if(shopService.buyItem(itemCode, 1)){
+        if(shopService.buyItem(itemCode, amount)){
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             UserEntity userEntity = userRepository.findByEmail(email);
 
@@ -73,10 +73,10 @@ public class    ShopController {
 
     //개별 물품 판매
     @PostMapping("/sell")
-    public ResponseEntity<Map<String, Object>> sellItem(@RequestParam String itemCode) {
+    public ResponseEntity<Map<String, Object>> sellItem(@RequestParam String itemCode, @RequestParam(defaultValue = "1") int amount) {
         Map<String, Object> response = new HashMap<>();
 
-        if(shopService.sellItem(itemCode, 1)) {
+        if(shopService.sellItem(itemCode, amount)) {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             UserEntity userEntity = userRepository.findByEmail(email);
 

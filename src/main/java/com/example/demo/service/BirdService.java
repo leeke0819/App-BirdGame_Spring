@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -46,6 +45,7 @@ public class BirdService {
 //        userRepository.save(userEntity);
 //        return true;
 //    }
+
     public BirdFeedResponseDto birdGiveFood(String itemCode, int amount) throws Exception {
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //현재 로그인 한 사용자 이메일 가져오기
         // user 가방 안에 있는 아이템 가져오기 (user 가방 가져오기)
@@ -78,11 +78,24 @@ public class BirdService {
         if(!(itemEntity.getItemType() == 1 || itemEntity.getItemType() == 2)){
             throw new RuntimeException("먹일 수 없는 아이템 입니다.");
         }
-        int birdHuger = (bird.getHungry() + itemEntity.getFeed()) * amount;
-        int birdThirst = (bird.getThirst() + itemEntity.getThirst()) * amount;
-        birdFeedResponseDto.setBirdHungry(birdHuger);
+        if (bird.getHungry() > 10) {
+            throw new RuntimeException("새가 배불러 먹지 못합니다.");
+        }
+        if (bird.getThirst() > 10) {
+            throw new RuntimeException("새가 더는 목마르지 않습니다.");
+        }
+
+        int birdHunger = bird.getHungry() + (itemEntity.getFeed() * amount);
+        int birdThirst = bird.getThirst() + (itemEntity.getThirst() * amount);
+
+        // 최대값 제한 (0-10 범위)
+        birdHunger = Math.min(10, Math.max(0, birdHunger));
+        birdThirst = Math.min(10, Math.max(0, birdThirst));
+
+        birdFeedResponseDto.setBirdHungry(birdHunger);
         birdFeedResponseDto.setBirdThirst(birdThirst);
-        bird.setHungry(birdHuger);
+
+        bird.setHungry(birdHunger);
         bird.setThirst(birdThirst);
         birdRepository.save(bird);
         return birdFeedResponseDto;

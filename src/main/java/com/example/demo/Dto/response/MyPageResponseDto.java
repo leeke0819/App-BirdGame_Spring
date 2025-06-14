@@ -22,8 +22,10 @@ public class MyPageResponseDto {
     String birdName;
     Integer birdLevel;
     Integer birdExp;
-    String status; // 배고픔, 목마름, 졸림 등 ..
+    String status;
 
+    int BirdHungry;
+    int BirdThirst;
     // 다른 거는.. 없음 ..
 
 

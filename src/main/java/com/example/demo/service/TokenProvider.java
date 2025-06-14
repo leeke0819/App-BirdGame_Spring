@@ -41,8 +41,7 @@ public class TokenProvider {
         Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
 
 
-        String subject;
-        subject = authentication.getName();
+        String subject = authentication.getName();
         System.out.println(authorities);
         String accessToken = Jwts.builder()
                 .setSubject(subject) //1. subject(email)식별자, 권한(Lore)

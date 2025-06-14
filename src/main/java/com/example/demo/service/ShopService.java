@@ -120,7 +120,6 @@ public class ShopService {
             return false;
         }
 
-        userEntity.setGold(userGold + itemPrice);
         userRepository.save(userEntity);
         return true;
     }

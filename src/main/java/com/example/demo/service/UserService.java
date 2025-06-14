@@ -22,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final AuthenticationManagerBuilder managerBuilder;
@@ -100,6 +102,7 @@ public class UserService {
         System.out.println(loginRequestDto.getEmail() + loginRequestDto.getPassword());
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+
         System.out.println(authenticationToken);
         Authentication authentication
                 = managerBuilder.getObject().authenticate(authenticationToken);
@@ -127,9 +130,16 @@ public class UserService {
         myPageResponseDto.setUserLevel(level.getLevel());
         myPageResponseDto.setMaxExp(level.getMaxExp());
         myPageResponseDto.setMinExp(level.getMinExp());
+
+        Optional<BirdEntity> bird = birdRepository.findByUserEmail(email);
+        if (bird.isPresent()){
+            BirdEntity birdEntity = bird.get();
+            myPageResponseDto.setBirdHungry(birdEntity.getHungry());
+            myPageResponseDto.setBirdThirst(birdEntity.getThirst());
+        }else{
+            throw new RuntimeException("새를 보유하고 있지 않습니다.");
+        }
         //TODO:여기서 레벨 별 경험치 총량 불러와서 myPageResponseDto에 삽입, Level별 경험치 총량은 enum형태로 관리하거나, Static변수를 모아놓은 Public 클래스로 관리하는게 좋을듯.
-
-
         return myPageResponseDto;
     }
 
