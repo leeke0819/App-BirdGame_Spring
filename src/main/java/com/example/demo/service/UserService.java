@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -87,6 +88,7 @@ public class UserService {
 
         BirdEntity birdEntity = new BirdEntity("이쁜 새 ");
         birdEntity.setUser(userEntity);
+        birdEntity.setCreatedAt(new Date());
         bagEntity.setUser(userEntity);
         bagEntity.setItem(itemEntity);
         bagEntity.setAmount(1);
@@ -122,11 +124,12 @@ public class UserService {
         System.out.println(userEntity.getGold()); // userEntity에서 돈을 가져와서 출력
         System.out.println(userEntity.getNickname()); // userEntity에서 닉네임을 가져와서 출력
 
+        UserExperienceLevel level = UserExperienceLevel.findByExp(userEntity.getExp());
+
         myPageResponseDto.setGold(userEntity.getGold());
         myPageResponseDto.setNickname(userEntity.getNickname());
         myPageResponseDto.setUserExp(userEntity.getExp());
         myPageResponseDto.setStarCoin(userEntity.getStarCoin());
-        UserExperienceLevel level = UserExperienceLevel.findByExp(userEntity.getExp());
         myPageResponseDto.setUserLevel(level.getLevel());
         myPageResponseDto.setMaxExp(level.getMaxExp());
         myPageResponseDto.setMinExp(level.getMinExp());

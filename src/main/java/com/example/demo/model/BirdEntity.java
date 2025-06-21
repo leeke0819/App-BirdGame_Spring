@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +27,18 @@ public class BirdEntity {
     private short status; //1 부화전 2부화 함 3 레벨업 몇이상...
     private String imageRoot;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false, nullable = false,
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = new Date();
+        }
+    }
+
     @ManyToOne
     private UserEntity user;
 
@@ -42,6 +56,9 @@ public class BirdEntity {
         //TODO:: Status, imageRoot 동적 변경 필요
         this.status = 2;
         this.imageRoot = "1111";
+        this.createdAt = new Date();
     }
+
+
 
 }

@@ -58,7 +58,7 @@ public class GlobalExceptionHandler{
     //TODO:: RunTimeException 예외처리 해주기.
     @ExceptionHandler
     public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.status(500).body("처리 중 문제가 발생했습니다.");
+        return ResponseEntity.status(500).body(String.valueOf(e));
     }
 
 
