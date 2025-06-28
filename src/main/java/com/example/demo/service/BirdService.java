@@ -8,13 +8,14 @@ import com.example.demo.repository.BagRepository;
 import com.example.demo.repository.BirdRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class BirdService {
     // 알 추가하는 로직 ..
@@ -58,17 +59,35 @@ public class BirdService {
         System.out.println(bagEntity);
         System.out.println(email);
         System.out.println(itemCode);
+        log.debug("amount{}", amount);
 
         if(bagEntity.isEmpty()) {
             throw new RuntimeException("가방에 아이템이 충분하지 않습니다.");
         }
+        Optional<BirdEntity> birdObject = birdRepository.findByUserEmail(email);
+        if(birdObject.isEmpty()){
+            throw new RuntimeException("해당하는 새를 찾을 수 없습니다.");
+        }
         BagEntity bag = bagEntity.get();
         if (bag.getAmount() - amount < 0){ //수량 충분 검사
+            log.debug(String.valueOf(bag.getAmount()));
             throw new RuntimeException("새에게 줄 아이템이 부족합니다.");
         }
         if(itemEntity.getItemType() == 100) {
             throw new RuntimeException("먹일 수 없는 아이템입니다.");
         }
+
+        BirdFeedResponseDto birdFeedResponseDto = new BirdFeedResponseDto();
+        BirdEntity bird = birdObject.get();
+
+        if(!(itemEntity.getItemType() == 1 || itemEntity.getItemType() == 2)){
+            throw new RuntimeException("먹일 수 없는 아이템 입니다.");
+        }
+        log.info(String.valueOf(bird.getHungry()));
+        if (bird.getHungry() >= 10 || bird.getThirst() >= 10) {
+            throw new RuntimeException("새가 배부르거나 목마르지 않습니다.");
+        }
+
         int updateAmount = bag.getAmount() - amount;
         bag.setAmount(bag.getAmount() - amount);
         if (updateAmount <= 0) {
@@ -76,22 +95,6 @@ public class BirdService {
         } else {
             bag.setAmount(updateAmount);
             bagRepository.save(bag);
-        }
-        Optional<BirdEntity> birdObject = birdRepository.findByUserEmail(email);
-        if(birdObject.isEmpty()){
-            throw new RuntimeException("해당하는 새를 찾을 수 없습니다.");
-        }
-        BirdFeedResponseDto birdFeedResponseDto = new BirdFeedResponseDto();
-        BirdEntity bird = birdObject.get();
-
-        if(!(itemEntity.getItemType() == 1 || itemEntity.getItemType() == 2)){
-            throw new RuntimeException("먹일 수 없는 아이템 입니다.");
-        }
-        if (bird.getHungry() > 10) {
-            throw new RuntimeException("새가 배불러 먹지 못합니다.");
-        }
-        if (bird.getThirst() > 10) {
-            throw new RuntimeException("새가 더는 목마르지 않습니다.");
         }
 
         int birdHunger = bird.getHungry() + (itemEntity.getFeed() * amount);

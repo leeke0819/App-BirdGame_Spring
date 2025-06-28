@@ -14,7 +14,6 @@ public interface BagRepository extends JpaRepository<BagEntity, Long> {
 
     @Query("SELECT b FROM BagEntity b WHERE b.user.email = :email AND b.item.itemCode = :itemCode")// JPQL 문법
     Optional<BagEntity> findByUserEmailAndItemCode(@Param("email") String email, @Param("itemCode") String itemCode);
-
     void deleteByUserEmail(String email);
 
 
