@@ -73,7 +73,7 @@ public class UserService {
         userEntity.setEmail(email);
         userEntity.setPassword(passwordEncoder.encode(password));
         userEntity.setNickname(nickname);
-        userEntity.setGold(10000);
+        userEntity.setGold(50000);
         userEntity.setStarCoin(20);
         userEntity.setAuthority("USER");
         userEntity.setExp(0);

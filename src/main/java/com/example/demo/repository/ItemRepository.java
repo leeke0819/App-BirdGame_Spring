@@ -14,8 +14,10 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
     Optional<ItemEntity> findByItemCode(String itemCode);
 
     @Query("SELECT i FROM ItemEntity i WHERE i.isDisplay = TRUE AND i.isEgg = FALSE")
-    Page<ItemEntity> findAllShopItems(Pageable pageable);
+    Page<ItemEntity> findAllItems(Pageable pageable);
 
     @Query("SELECT i FROM ItemEntity i WHERE i.isDisplay = FALSE AND i.isEgg = TRUE")
-    Page<ItemEntity> findAllShopEggs(Pageable pageable);
+    Page<ItemEntity> findAllEggs(Pageable pageable);
+
+
 }

@@ -13,10 +13,11 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping
+    @GetMapping("get-list")
     public List<MyBookResponseDto> getBook() {
         return bookService.getBooksFromEmail();
     }
+
 //
 //    @PostMapping
 //    public void postBook() {

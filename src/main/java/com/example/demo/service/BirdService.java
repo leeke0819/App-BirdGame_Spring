@@ -24,6 +24,8 @@ public class BirdService {
     final private BagRepository bagRepository;
     final private BirdRepository birdRepository;
     final private ItemRepository itemRepository;
+    private static int BIRD_MAX_HUNGER = 100;
+    private static int BIRD_MAX_THIRST = 100;
 
     public BirdService(UserRepository userRepository, BagRepository bagRepository, BirdRepository birdRepository, ItemRepository itemRepository) {
         this.userRepository = userRepository;
@@ -84,8 +86,11 @@ public class BirdService {
             throw new RuntimeException("먹일 수 없는 아이템 입니다.");
         }
         log.info(String.valueOf(bird.getHungry()));
-        if (bird.getHungry() >= 10 || bird.getThirst() >= 10) {
-            throw new RuntimeException("새가 배부르거나 목마르지 않습니다.");
+        if (bird.getHungry() >= BIRD_MAX_HUNGER && itemEntity.getFeed() > 0) {
+            throw new RuntimeException("새가 배불러서 먹지 못합니다.");
+        }
+        if(bird.getThirst() >= BIRD_MAX_THIRST && itemEntity.getThirst() > 0) {
+            throw new RuntimeException("새가 더는 목마르지 않습니다.");
         }
 
         int updateAmount = bag.getAmount() - amount;
@@ -100,9 +105,9 @@ public class BirdService {
         int birdHunger = bird.getHungry() + (itemEntity.getFeed() * amount);
         int birdThirst = bird.getThirst() + (itemEntity.getThirst() * amount);
 
-        // 최대값 제한 (0-10 범위)
-        birdHunger = Math.min(10, Math.max(0, birdHunger));
-        birdThirst = Math.min(10, Math.max(0, birdThirst));
+        // 최대값 제한 (0-BIRD_MAX_* 범위)
+        birdHunger = Math.min(BIRD_MAX_HUNGER, Math.max(0, birdHunger));
+        birdThirst = Math.min(BIRD_MAX_THIRST, Math.max(0, birdThirst));
 
         birdFeedResponseDto.setBirdHungry(birdHunger);
         birdFeedResponseDto.setBirdThirst(birdThirst);
@@ -138,7 +143,7 @@ public class BirdService {
         // 몇 분마다 바꿀 건지 -> 현재는 15분
         int change = (int)(elapsedTime / 15);
 
-        // 목마름, 배고픔 최대값 0으로 설정 -> 0 이하로는 안줄어들게끔.
+        // 목마름, 배고픔 최솟값 0으로 설정 -> 0 이하로는 안줄어들게끔.
         int newHungry = Math.max(bird.getHungry() - change, 0);
         int newThirst = Math.max(bird.getThirst() - change, 0);
 

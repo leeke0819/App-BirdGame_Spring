@@ -37,7 +37,7 @@ public class    ShopController {
     public Page<ItemEntity> shopPage(@RequestParam String pageNo, @RequestParam int category) {
         try {
             int pageNumber = Integer.parseInt(pageNo);
-            return shopService.getShopPageItems(pageNumber, 10,category);
+            return shopService.getShopPageItems(pageNumber, 20, category);
         }
         catch(NumberFormatException e){
             System.out.println("사용자가 잘못된 포맷으로 접근했습니다.");

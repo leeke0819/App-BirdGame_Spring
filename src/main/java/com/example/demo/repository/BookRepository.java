@@ -9,4 +9,6 @@ import java.util.List;
 public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     List<BookEntity> findByUserEntityEmail(String email);
 
+    boolean existsByUserEntityEmailAndItemEntityItemCode(String email, String itemCode);
+
 }

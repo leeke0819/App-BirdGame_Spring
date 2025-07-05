@@ -4,6 +4,7 @@ import com.example.demo.Dto.request.InventoryResponseDto;
 import com.example.demo.model.BagEntity;
 import com.example.demo.repository.BagRepository;
 import com.example.demo.service.BagService;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class BagController {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             int pageNumber = Integer.parseInt(pageNo);
-            return ResponseEntity.ok(bagService.getInventory(email,pageNumber, 10));
+            return ResponseEntity.ok(bagService.getInventory(email, pageNumber, 20));
         } catch (NumberFormatException e){
             throw new NumberFormatException("사용자가 잘못된 포멧으로 접근했습니다.");
         }

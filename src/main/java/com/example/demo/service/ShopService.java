@@ -1,11 +1,14 @@
 package com.example.demo.service;
 
 import com.example.demo.model.BagEntity;
+import com.example.demo.model.BookEntity;
 import com.example.demo.model.ItemEntity;
 import com.example.demo.model.UserEntity;
 import com.example.demo.repository.BagRepository;
+import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,16 +19,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ShopService {
 
     final private ItemRepository itemRepository;
     final private UserRepository userRepository;
     final private BagRepository bagRepository;
+    final private BookRepository bookRepository;
 
-    public ShopService(ItemRepository itemRepository, UserRepository userRepository, BagRepository bagRepository) {
+    public ShopService(ItemRepository itemRepository, UserRepository userRepository, BagRepository bagRepository, BookRepository bookRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bagRepository = bagRepository;
+        this.bookRepository = bookRepository;
     }
 
 
@@ -42,11 +48,11 @@ public class ShopService {
 
         Pageable pageable = PageRequest.of(page, size);
         if (category == 1){
-            return itemRepository.findAllShopItems(pageable);
+            return itemRepository.findAllItems(pageable);
         } else if ( category == 2) {
-            return itemRepository.findAllShopEggs(pageable);
+            return itemRepository.findAllEggs(pageable);
         }
-        return itemRepository.findAllShopItems(pageable);
+        return itemRepository.findAllItems(pageable);
     }
 
 
@@ -75,8 +81,21 @@ public class ShopService {
                 bag.setItem(itemEntity);
                 bagRepository.save(bag);
             }
-            //이후 가방에 넣어주기
             userRepository.save(userEntity);
+            boolean alreadyExists = bookRepository.existsByUserEntityEmailAndItemEntityItemCode(email, itemCode);
+
+            if (alreadyExists) {
+                log.info(email+"의 "+itemCode+"은(는) 이미 도감에 등록 된 아이템입니다.");
+                return true;
+            }
+
+            BookEntity book = BookEntity.builder()
+                    .itemEntity(itemEntity)
+                    .userEntity(userEntity)
+                    .build();
+
+            bookRepository.save(book);
+            //이후 가방에 넣어주기
             return true;
         }
         else{
