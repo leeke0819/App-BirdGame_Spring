@@ -27,6 +27,9 @@ public class BirdEntity {
     private short status; //1 부화전 2부화 함 3 레벨업 몇이상...
     private String imageRoot;
 
+    private Date lastFedAt;
+    private Date lastThirstAt;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", updatable = false, nullable = false,
             columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
@@ -57,6 +60,8 @@ public class BirdEntity {
         this.status = 2;
         this.imageRoot = "1111";
         this.createdAt = new Date();
+        this.lastFedAt = new Date();
+        this.lastThirstAt = new Date();
     }
 
 

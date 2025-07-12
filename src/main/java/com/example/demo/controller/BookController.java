@@ -14,8 +14,14 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping("get-list")
-    public List<MyBookResponseDto> getBook() {
-        return bookService.getBooksFromEmail();
+    public List<MyBookResponseDto> getBook(@RequestParam(defaultValue = "1") int category) {
+        return bookService.getBooksFromEmail(category);
+    }
+
+    // 도감 다 획득했을 때 기준으로 모든 아이템 리스트 가져오고 획득 여부 알기
+    @GetMapping("get-complete-list")
+    public List<MyBookResponseDto> getCompleteBookList(@RequestParam(defaultValue = "1") int category) {
+        return bookService.getCompleteBookList(category);
     }
 
 //

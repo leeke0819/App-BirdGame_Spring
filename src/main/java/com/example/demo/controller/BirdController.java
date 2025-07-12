@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.Dto.request.BirdFeedRequestDto;
 import com.example.demo.Dto.response.BirdFeedResponseDto;
-import com.example.demo.Dto.response.MyPageResponseDto;
 import com.example.demo.model.BirdEntity;
 import com.example.demo.service.BirdService;
 import org.springframework.beans.factory.annotation.Autowired;

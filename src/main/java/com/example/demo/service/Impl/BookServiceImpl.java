@@ -7,15 +7,13 @@ import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.service.BookService;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,7 +27,7 @@ public class BookServiceImpl implements BookService {
         this.itemRepository = itemRepository;
     }
 
-    public List<MyBookResponseDto> getBooksFromEmail() {
+    public List<MyBookResponseDto> getBooksFromEmail(int category) {
         log.info("===============START: GET BOOKS FROM EMAIL ===================");
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         log.debug(email);
@@ -46,17 +44,45 @@ public class BookServiceImpl implements BookService {
         }
         return myBookResponseDtos;
     }
-    /*
-    public Page<ItemEntity> getBookPageItems(int page, int size, int category) {
 
-        Pageable pageable = PageRequest.of(page, size);
-        if (category == 1){
-            return itemRepository.findAllItems(pageable);
-        } else if ( category == 2) {
-            return itemRepository.findAllEggs(pageable);
+    // 전체 도감 아이템 가져오기 + 아이템 획득 여부
+    public List<MyBookResponseDto> getCompleteBookList(int category) {
+        log.info("===============START: GET COMPLETE BOOK LIST ===================");
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<ItemEntity> allItems;
+
+        // 아이템이 재료일때.. (카테고리1)
+        if(category == 1) {
+            allItems = itemRepository.findByIsDisplayTrueAndIsEggFalse();
+        } else if(category == 2) { // 그게 아니고 알일때.. (카테고리2)
+            allItems = itemRepository.findByIsDisplayFalseAndIsEggTrue();
+        } else { // 기본값은 재료로 설정.
+            allItems = itemRepository.findByIsDisplayTrueAndIsEggFalse();
         }
-        return itemRepository.findAllItems(pageable);
+
+        // user가 획득한 ItemCode 목록
+        List<BookEntity> userBooks = bookRepository.findByUserEntityEmail(email);
+        Set<String> obtainedItemCodes = userBooks.stream()
+                .map(book -> book.getItemEntity().getItemCode())
+                .collect(Collectors.toSet());
+
+        // 전체 아이템에 획득 여부 보이게끔..
+        List<MyBookResponseDto> completeList = new ArrayList<>();
+        for (ItemEntity item : allItems) {
+            boolean isObtained = obtainedItemCodes.contains(item.getItemCode());
+
+            MyBookResponseDto dto = MyBookResponseDto.builder()
+                    .itemName(item.getItemName())
+                    .itemDescription(item.getItemDescription())
+                    .imageRoot(item.getImageRoot())
+                    .isEgg(item.isEgg())
+                    .isDisplay(item.isDisplay())
+                    .isObtained(isObtained)
+                    .build();
+
+            completeList.add(dto);
+        }
+        return completeList;
     }
-    */
 
 }

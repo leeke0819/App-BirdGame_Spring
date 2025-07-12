@@ -40,5 +40,4 @@ public class ItemEntity {
 
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean isDisplay;
-
 }
