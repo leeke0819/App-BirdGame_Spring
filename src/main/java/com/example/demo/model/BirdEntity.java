@@ -26,8 +26,11 @@ public class BirdEntity {
     private int level;
     private short status; //1 부화전 2부화 함 3 레벨업 몇이상...
     private String imageRoot;
-
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Date lastFedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Date lastThirstAt;
 
     @Temporal(TemporalType.TIMESTAMP)

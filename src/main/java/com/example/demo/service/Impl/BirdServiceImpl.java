@@ -104,6 +104,8 @@ public class BirdServiceImpl implements BirdService {
             bagRepository.save(bag);
         }
 
+        int itemFeed = itemEntity.getFeed();
+        int itemThirst = itemEntity.getThirst();
         int birdHunger = bird.getHungry() + (itemEntity.getFeed() * amount);
         int birdThirst = bird.getThirst() + (itemEntity.getThirst() * amount);
 
@@ -111,13 +113,20 @@ public class BirdServiceImpl implements BirdService {
         birdHunger = Math.min(BIRD_MAX_HUNGER, Math.max(0, birdHunger));
         birdThirst = Math.min(BIRD_MAX_THIRST, Math.max(0, birdThirst));
 
-        birdFeedResponseDto.setBirdHungry(birdHunger);
-        birdFeedResponseDto.setBirdThirst(birdThirst);
 
         bird.setHungry(birdHunger);
         bird.setThirst(birdThirst);
-        bird.setLastFedAt(new Date());
-        bird.setLastThirstAt(new Date());
+        birdFeedResponseDto.setBirdHungry(birdHunger);
+        birdFeedResponseDto.setBirdThirst(birdThirst);
+
+        Date now = new Date();
+        if (itemFeed > 0) {
+            bird.setLastFedAt(now);
+        }
+        if (itemThirst > 0) {
+            bird.setLastThirstAt(now);
+        }
+
         birdRepository.save(bird);
         return birdFeedResponseDto;
     }

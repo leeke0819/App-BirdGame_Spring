@@ -4,14 +4,8 @@ import com.example.demo.Dto.request.LoginRequestDto;
 import com.example.demo.Dto.request.UpdateUserInfoRequestDto;
 import com.example.demo.Dto.response.MyPageResponseDto;
 import com.example.demo.Dto.response.TokenDto;
-import com.example.demo.model.BagEntity;
-import com.example.demo.model.BirdEntity;
-import com.example.demo.model.ItemEntity;
-import com.example.demo.model.UserEntity;
-import com.example.demo.repository.BagRepository;
-import com.example.demo.repository.BirdRepository;
-import com.example.demo.repository.ItemRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.TokenProvider;
 import com.example.demo.service.UserExperienceLevel;
 import com.example.demo.service.UserService;
@@ -42,9 +36,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final BagRepository bagRepository;
     private final BirdRepository birdRepository;
+    private final BookRepository bookRepository;
 
 
-    public UserServiceImpl(AuthenticationManagerBuilder managerBuilder, TokenProvider tokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, ItemRepository itemRepository, BagRepository bagRepository, BirdRepository birdRepository) {
+    public UserServiceImpl(AuthenticationManagerBuilder managerBuilder, TokenProvider tokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, ItemRepository itemRepository, BagRepository bagRepository, BirdRepository birdRepository, BookRepository bookRepository) {
         this.managerBuilder = managerBuilder;
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
@@ -52,6 +47,7 @@ public class UserServiceImpl implements UserService {
         this.itemRepository = itemRepository;
         this.bagRepository = bagRepository;
         this.birdRepository = birdRepository;
+        this.bookRepository = bookRepository;
     }
 
     //함수로 분리...하는편이 좋습니다.
@@ -87,16 +83,23 @@ public class UserServiceImpl implements UserService {
         userEntity.setExp(0);
         userEntity.setLevel(1);
 
-        //가방 생성
+        // 가방 생성
         BagEntity bagEntity = new BagEntity();
         ItemEntity itemEntity = itemRepository.findByItemCode("egg_001")
                 .orElseThrow(() -> new EntityNotFoundException("기본 알 아이템(egg_001)을 찾을 수 없습니다."));
         //TODO:: 디버그 용 예외 던질 필요있음
 
+        // egg 도감 등록
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setUserEntity(userEntity);
+        bookEntity.setItemEntity(itemEntity);
 
-        BirdEntity birdEntity = new BirdEntity("이쁜 새 ");
+        BirdEntity birdEntity = new BirdEntity();
+        birdEntity.setName("이쁜 새 ");
         birdEntity.setUser(userEntity);
         birdEntity.setCreatedAt(new Date());
+        birdEntity.setLastFedAt(new Date());
+        birdEntity.setLastThirstAt(new Date());
         bagEntity.setUser(userEntity);
         bagEntity.setItem(itemEntity);
         bagEntity.setAmount(1);
