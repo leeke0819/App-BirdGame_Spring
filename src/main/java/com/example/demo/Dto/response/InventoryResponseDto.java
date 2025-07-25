@@ -1,4 +1,4 @@
-package com.example.demo.Dto.request;
+package com.example.demo.Dto.response;
 
 
 import com.example.demo.model.ItemEntity;

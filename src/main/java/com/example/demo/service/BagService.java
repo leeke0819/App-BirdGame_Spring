@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.Dto.request.InventoryResponseDto;
+import com.example.demo.Dto.response.InventoryResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

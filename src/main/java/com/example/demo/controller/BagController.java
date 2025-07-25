@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.Dto.request.InventoryResponseDto;
+import com.example.demo.Dto.response.InventoryResponseDto;
 import com.example.demo.model.BagEntity;
 import com.example.demo.repository.BagRepository;
 import com.example.demo.service.BagService;
