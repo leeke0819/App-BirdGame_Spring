@@ -47,6 +47,7 @@ public class GameServiceImpl implements GameService {
                 ", sessionId = " + sessionId +
                 ", gameId = "+ startGameRequestDto.getGameId());
         return sessionId;
+        //TODO:: 게임을 하고있을 때 게임 시작 요청을 보내는 상황 확인ㅋ
     }
 
     @Override
