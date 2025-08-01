@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface BirdService {
     BirdFeedResponseDto birdGiveFood(String itemCode, int amount) throws Exception;
-    void deleteUserBagItem(BagEntity bagEntity);
     BirdEntity updateBirdState(String email);
 }
