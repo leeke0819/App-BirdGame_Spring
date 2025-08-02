@@ -32,7 +32,9 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, ServletException, IOException {
         String jwt = resolveToken(request);
 
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) { //토큰의 유효성 체크
+
+        //TODO:: 헤더에 RefreshToken 이 있는 경우... refreshToken을 추출해서 validate Token에 true와 함께 전달.
+        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt, false)) { //토큰의 유효성 체크
             Authentication authentication = tokenProvider.getAuthentication(jwt); //토큰에서 authenticatino 객체 추출
             SecurityContextHolder.getContext().setAuthentication(authentication); //팔찌채우기: Authentication 객체를 Security Context holder에 등록
         }

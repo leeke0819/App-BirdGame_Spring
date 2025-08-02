@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("api/v1/admin/**").permitAll()
                         .requestMatchers("api/v1/login/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
         );
 
 

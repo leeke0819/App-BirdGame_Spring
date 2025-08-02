@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -34,18 +36,27 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> NumberFormatException(NumberFormatException e){
         return ResponseEntity.status(401).body("사용자가 잘못된 포멧으로 접근했습니다.");
     }
-    @ExceptionHandler
-    public ResponseEntity<String> ExpiredJwtException(ExpiredJwtException e) {
-        return ResponseEntity.status(401).body("토큰이 만료되었습니다.");
-    }
+
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<String> handleSecurityException(SecurityException e) {
         return ResponseEntity.status(401).body("잘못된 JWT 서명입니다.");
     }
+
     @ExceptionHandler(UnsupportedJwtException.class)
     public ResponseEntity<String> handleUnsupportedJwtException(UnsupportedJwtException e) {
         return ResponseEntity.status(401).body("지원되지 않는 JWT 토큰입니다.");
     }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String,Object>> handleExpiredJwtException(ExpiredJwtException e){
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", 401);
+        body.put("error", "ExpiredJwtException");
+        body.put("message", "만료된 토큰입니다.");
+        body.put("timestamp", System.currentTimeMillis());
+        return ResponseEntity.status(401).body(body);
+    }
+    
     @ExceptionHandler
     public ResponseEntity<String> EntityNotFoundException(EntityNotFoundException e){
         return ResponseEntity.status(404).body(String.valueOf(e));
