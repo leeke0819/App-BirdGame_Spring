@@ -1,9 +1,11 @@
 package com.example.demo.service.Impl;
 
 import com.example.demo.model.BagEntity;
+import com.example.demo.model.BookEntity;
 import com.example.demo.model.ItemEntity;
 import com.example.demo.model.UserEntity;
 import com.example.demo.repository.BagRepository;
+import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.CraftService;
@@ -28,11 +30,13 @@ public class CraftServiceImpl implements CraftService {
     private final BagRepository bagRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
-    public CraftServiceImpl(BagRepository bagRepository, ItemRepository itemRepository, UserRepository userRepository) {
+    public CraftServiceImpl(BagRepository bagRepository, ItemRepository itemRepository, UserRepository userRepository, BookRepository bookRepository) {
         this.bagRepository = bagRepository;
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
     }
 
     public void craftItem(String itemCode) {
@@ -79,6 +83,22 @@ public class CraftServiceImpl implements CraftService {
             newBagItem.setAmount(1);
             bagRepository.save(newBagItem);
         }
+
+        // 도감 등록
+        boolean alreadyExists =
+                bookRepository.existsByUserEntityEmailAndItemEntityItemCode(email, itemCode);
+        if (!alreadyExists) {
+            BookEntity book = BookEntity.builder()
+                    .itemEntity(craftedItem)
+                    .userEntity(user)
+                    .build();
+            bookRepository.save(book);
+            log.info("도감 등록 완료: user =" + email + ", itemCode =" + itemCode);
+        } else {
+            log.info("이미 도감 등록됨: user =" + email + ", itemCode =" + itemCode);
+        }
+
+        log.info("아이템 '" + itemCode + "' 조합 완료 및 가방에 추가됨");
 
         log.info("아이템 '" + itemCode + "' 조합 완료 및 가방에 추가됨");
     }
