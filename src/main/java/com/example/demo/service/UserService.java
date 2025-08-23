@@ -2,8 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.Dto.request.LoginRequestDto;
 import com.example.demo.Dto.request.UpdateUserInfoRequestDto;
-import com.example.demo.Dto.response.MyPageResponseDto;
-import com.example.demo.Dto.response.TokenDto;
+import com.example.demo.Dto.response.*;
 import com.example.demo.model.UserEntity;
 import org.springframework.stereotype.Service;
 
@@ -16,4 +15,7 @@ public interface UserService {
     String updateUserInfo(UpdateUserInfoRequestDto updateUserInfoRequestDto);
     Integer getGoldByEmail();
     String getNicknameByEmail();
+    TokenDto kakaoLogin(String authCode);
+    KakaoMeDto.KakaoMe getKakaoUserInfo(String accessToken);
+    KakaoUserMinimalResponseDto fetchKakaoMinimal(String accessToken);
 }

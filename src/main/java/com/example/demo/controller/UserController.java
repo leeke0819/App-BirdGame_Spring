@@ -1,12 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.Dto.response.KakaoOauthTokenDto;
+import com.example.demo.Dto.response.KakaoUserMinimalResponseDto;
 import com.example.demo.Dto.response.MyPageResponseDto;
 import com.example.demo.Dto.request.UpdateUserInfoRequestDto;
 import com.example.demo.Dto.request.UserInfoRequestDto;
+import com.example.demo.Dto.response.TokenDto;
 import com.example.demo.model.UserEntity;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -57,6 +61,16 @@ public class UserController {
         Map<String, Integer> response = new HashMap<>();
         response.put("gold", gold);
         return ResponseEntity.ok(response);
+    }
+
+//    @PostMapping("/login/kakao")
+//    public void loginKakaoUser(){
+//        System.out.println();
+//    }
+    @GetMapping("/kakao/callback")
+    public TokenDto kakaoCallback(@RequestParam String code){
+        //여기서 유저 정보를 조회하는 로직 필요
+        return userService.kakaoLogin(code);
     }
 
 //    @GetMapping("/nickname")

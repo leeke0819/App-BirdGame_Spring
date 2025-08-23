@@ -2,8 +2,7 @@ package com.example.demo.service.Impl;
 
 import com.example.demo.Dto.request.LoginRequestDto;
 import com.example.demo.Dto.request.UpdateUserInfoRequestDto;
-import com.example.demo.Dto.response.MyPageResponseDto;
-import com.example.demo.Dto.response.TokenDto;
+import com.example.demo.Dto.response.*;
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.TokenProvider;
@@ -11,8 +10,9 @@ import com.example.demo.service.UserExperienceLevel;
 import com.example.demo.service.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -20,10 +20,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -37,6 +43,17 @@ public class UserServiceImpl implements UserService {
     private final BagRepository bagRepository;
     private final BirdRepository birdRepository;
     private final BookRepository bookRepository;
+
+    @Value("${kakao.client-id}")
+    private String clientId;
+
+    @Value("${kakao.client-secret}")
+    private String clientSecret;
+
+    @Value("${kakao.redirect-uri}")
+    private String redirectUri;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
 
     public UserServiceImpl(AuthenticationManagerBuilder managerBuilder, TokenProvider tokenProvider, UserRepository userRepository, PasswordEncoder passwordEncoder, ItemRepository itemRepository, BagRepository bagRepository, BirdRepository birdRepository, BookRepository bookRepository) {
@@ -72,6 +89,45 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("닉네임은 1자 이상 5자 이하로 설정해야 합니다.");
         }
 
+        //여기서 BagEntity를 만들고.... 그 안에, 알과 .. 초반아이템들을 조금 넣어줘야한다...
+        return signUp(email, password, nickname);
+    }
+
+    @Override
+    public TokenDto kakaoLogin(String authCode){
+        //소셜로그인 1단계. acceessToken가져오기
+        String accessToken = getAccessTokenFromAuthCode(authCode);
+        //소셜로그인 2단계. 사용자 정보 가져오기.
+        KakaoMeDto.KakaoMe kakaoUserInfo = getKakaoUserInfo(accessToken);
+        String email = kakaoUserInfo.kakao_account().email();
+        String nickname = kakaoUserInfo.kakao_account().profile().nickname();
+        // 1) 소셜 전용 “원문 비밀번호”를 결정 (항상 동일한 규칙)
+        String rawSocialPw = assemblePw(email);
+
+        // 2) 최초 가입 시에만 DB에는 "인코딩된" 값 저장
+        if(!userRepository.existsByEmail(email)) {
+            String encoded = rawSocialPw;
+            signUp(email, encoded, nickname); // signUp 내부에서 또 encode 하지 않도록 주의!
+            log.info(encoded);
+        }
+        log.info(nickname);
+        log.info(email);
+        // 3) 인증할 때는 "원문"을 넣어야 함
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(email, rawSocialPw);
+
+        log.info(String.valueOf(authenticationToken));
+        Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
+        log.info(String.valueOf(authentication));
+        return tokenProvider.generateTokenDto(authentication);
+
+    }
+
+    public String assemblePw(String email) {
+        return String.format("%s%s", "KAKAO", email);
+    }
+
+    public UserEntity signUp(String email, String password, String nickname) {
         //유저 생성
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(email);
@@ -106,9 +162,100 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userEntity);
         bagRepository.save(bagEntity);
         birdRepository.save(birdEntity);
-        //여기서 BagEntity를 만들고.... 그 안에, 알과 .. 초반아이템들을 조금 넣어줘야한다...
         return userEntity;
     }
+
+    public String getAccessTokenFromAuthCode(String authCode){
+        final String url = "https://kauth.kakao.com/oauth/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", clientId);
+        params.add("redirect_uri", redirectUri);
+        params.add("code", authCode);
+        params.add("client_secret", clientSecret);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        try {
+            ResponseEntity<KakaoOauthTokenDto> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    request,
+                    KakaoOauthTokenDto.class
+            );
+            String accessToken = response.getBody().getAccessToken();
+            return accessToken;
+        } catch (HttpClientErrorException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                    "카카오에서 토큰으로 코드를 교환하지 못함 : " + e.getResponseBodyAsString(), e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                    "카카오 토큰 요청 중 예기치 않은 오류 발생", e);
+        }
+    }
+
+    @Override
+    public KakaoMeDto.KakaoMe getKakaoUserInfo(String accessToken) {
+        final String url = "https://kapi.kakao.com/v2/user/me";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken); // Authorization: Bearer {token}
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<KakaoMeDto.KakaoMe> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    request,
+                    KakaoMeDto.KakaoMe.class
+            );
+            return Objects.requireNonNull(response.getBody(), "empty user/me response");
+        } catch (HttpClientErrorException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                    "카카오에서 사용자 정보를 가져오지 못함 : " + e.getResponseBodyAsString(), e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
+                    "카카오 사용자 정보 요청 중 예기치 않은 오류 발생", e);
+        }
+    }
+
+    @Override
+    public KakaoUserMinimalResponseDto fetchKakaoMinimal(String accessToken) {
+        KakaoMeDto.KakaoMe me = getKakaoUserInfo(accessToken);
+
+        String email = null;
+        Boolean emailVerified = false;
+        String profileImageUrl = null;
+
+        KakaoMeDto.KakaoAccount acc = (me != null ? me.kakao_account() : null);
+        if (acc != null) {
+
+            if (Boolean.TRUE.equals(acc.is_email_valid())
+                    && Boolean.TRUE.equals(acc.is_email_verified())
+                    && acc.email() != null) {
+                email = acc.email();
+                emailVerified = true;
+            }
+
+            KakaoMeDto.KakaoProfile profile = acc.profile();
+            if (profile != null && !Boolean.TRUE.equals(profile.is_default_image())) {
+                profileImageUrl = profile.profile_image_url();
+            }
+        }
+
+        return KakaoUserMinimalResponseDto.builder()
+                .kakaoUserId(me != null ? me.id() : null)
+                .email(email)
+                .emailVerified(emailVerified)
+                .profileImageUrl(profileImageUrl)
+                .build();
+    }
+
 
     public TokenDto loginUser(LoginRequestDto loginRequestDto) {
         UserEntity userEntity = userRepository.findByEmail(loginRequestDto.getEmail());
@@ -186,6 +333,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("email에 해당하는 유저가 존재하지않거나 이미 제거되었습니다.");
         }
     }
+
 
     public String updateUserInfo(UpdateUserInfoRequestDto updateUserInfoRequestDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

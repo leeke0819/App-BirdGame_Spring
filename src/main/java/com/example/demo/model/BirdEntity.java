@@ -15,8 +15,8 @@ import java.util.Date;
 @Setter
 public class BirdEntity {
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private int age;
     private int health;
